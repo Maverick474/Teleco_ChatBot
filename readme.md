@@ -12,5 +12,6 @@ The Telecom Chatbot is a multi-agent system designed to provide intelligent cust
 - Intelligent Routing: Uses a Router Agent to direct queries to specialized agents
 - RAG Retrieval: Integrates retrieval-augmented generation for accurate information lookup
 - Multi-Agent Support: Specialized agents for policies, packages, general inquiries, troubleshooting, and billing
-- LLM Integration: Powered by OpenAI's language models for natural language understanding and generation
+- LLM Integration: Powered by OpenAI's language model (gpt-4o-mini) for natural language understanding and generation
+
 
