@@ -1,19 +1,12 @@
-<<<<<<< HEAD
 from typing import TypedDict, List, Optional, Dict, Annotated, Sequence
-=======
-from typing import TypedDict, List, Optional, Dict
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
 from langchain_openai import ChatOpenAI
 import os
 from vectordb import VectorDBManager
 from datetime import datetime
-<<<<<<< HEAD
 import random
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
-=======
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
 
 # Initialize LLM
 llm = ChatOpenAI(
@@ -44,7 +37,6 @@ CATEGORY_KEYWORDS = {
     'general': ['teleco', 'service', 'services', 'about', 'company', 'what is', 'tell me', 'information', 'offer', 'provide']
 }
 
-<<<<<<< HEAD
 class State(TypedDict):
     # Input
     text: str
@@ -70,22 +62,6 @@ class State(TypedDict):
     should_end: bool
     is_greeting: bool
     is_farewell: bool
-=======
-class TelecoState(TypedDict):
-    text: str
-    language: str 
-    original_language: str 
-    route: Optional[str]
-    agent_path: List[str]
-    response: Optional[str]
-    context: Optional[str]
-    conversation_id: Optional[str]
-    user_name: Optional[str]
-    is_new_conversation: bool
-    previous_intent: Optional[str]
-    # NEW: Store English version of the query for processing
-    english_query: Optional[str]
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
 
 class HumanoidResponse(TypedDict):
     response: str
@@ -97,7 +73,6 @@ class HumanoidResponse(TypedDict):
 
 def rag_retrieve(query_en: str, category: str) -> str:
     """ChromaDB-powered retrieval with category filtering"""
-<<<<<<< HEAD
     if category == "general":
         results = vector_manager.similarity_search(
             query_en,
@@ -105,29 +80,12 @@ def rag_retrieve(query_en: str, category: str) -> str:
             filter=None
         )
     else:
-=======
-    # For "general" queries, search ALL documents without category filter
-    # because general info about Teleco could be in any document
-    if category == "general":
-        results = vector_manager.similarity_search(
-            query_en,
-            k=5,  # Get more results for general queries
-            filter=None  # No category filter
-        )
-    else:
-        # First try with category filter
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         results = vector_manager.similarity_search(
             query_en,
             k=3,
             filter={"category": category}
         )
         
-<<<<<<< HEAD
-=======
-        # If no results found with category filter, try without filter
-        # This handles cases where documents might not be categorized correctly
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         if not results:
             print(f"No results with category '{category}', searching all documents...")
             results = vector_manager.similarity_search(
@@ -146,19 +104,11 @@ def rag_retrieve(query_en: str, category: str) -> str:
     
     return "\n\n".join(formatted_results) if formatted_results else ""
 
-<<<<<<< HEAD
-=======
-# ===== ENHANCED TRANSLATION UTILITIES =====
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
 def translate_text(text: str, src_lang: str, target_lang: str) -> str:
     """Translate text between languages"""
     if src_lang == target_lang:
         return text
     
-<<<<<<< HEAD
-=======
-    # Map Teleco brand name to target language script
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     teleco_in_target = {
         'en': 'Teleco',
         'ur': 'ٹیلیکو',
@@ -189,41 +139,16 @@ def translate_response(text: str, target_lang: str) -> str:
         return text
     return translate_text(text, 'en', target_lang)
 
-<<<<<<< HEAD
-=======
-# ===== NEW TRANSLATION NODE =====
-def translation_node(state: TelecoState):
-    """Translate query to English for processing and store English query in state"""
-    if state["language"] == 'en':
-        # If already English, just copy text to english_query
-        state["english_query"] = state["text"]
-    else:
-        # Translate non-English query to English
-        state["english_query"] = translate_to_english(state["text"], state["language"])
-    
-    state["agent_path"].append("TranslationNode")
-    return state
-
-# ===== LLM-GENERATED GREETING/FAREWELL FUNCTIONS =====
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
 def get_random_greeting(language: str, user_name: Optional[str] = None) -> str:
     """Generate a humanoid greeting using LLM"""
     time_of_day = get_time_based_greeting()
     
-<<<<<<< HEAD
-=======
-    # Add some variation hints
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     style_hints = [
         "Be enthusiastic and warm",
         "Be calm and professional", 
         "Be casual and friendly",
         "Be cheerful and welcoming"
     ]
-<<<<<<< HEAD
-=======
-    import random
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     style = random.choice(style_hints)
     
     prompt = f"""
@@ -249,10 +174,6 @@ def get_random_greeting(language: str, user_name: Optional[str] = None) -> str:
     try:
         return llm.invoke(prompt).content.strip()
     except:
-<<<<<<< HEAD
-=======
-        # Fallback if LLM fails
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         if language == 'en':
             return f"Hello{f' {user_name}' if user_name else ''}! How can I help you with Teleco services today?"
         elif language == 'ur':
@@ -262,21 +183,12 @@ def get_random_greeting(language: str, user_name: Optional[str] = None) -> str:
 
 def get_random_farewell(language: str, user_name: Optional[str] = None, issue_resolved: bool = False) -> str:
     """Generate a humanoid farewell using LLM"""
-<<<<<<< HEAD
-=======
-    
-    # Add some variation hints
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     style_hints = [
         "Be warm and appreciative",
         "Be cheerful and positive",
         "Be friendly and inviting",
         "Be casual and kind"
     ]
-<<<<<<< HEAD
-=======
-    import random
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     style = random.choice(style_hints)
     
     prompt = f"""
@@ -304,10 +216,6 @@ def get_random_farewell(language: str, user_name: Optional[str] = None, issue_re
     try:
         return llm.invoke(prompt).content.strip()
     except:
-<<<<<<< HEAD
-=======
-        # Fallback if LLM fails
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         if language == 'en':
             base = "Glad I could help!" if issue_resolved else "Goodbye!"
             return f"{base}{f' {user_name},' if user_name else ''} Have a great day!"
@@ -318,31 +226,16 @@ def get_random_farewell(language: str, user_name: Optional[str] = None, issue_re
             base = "سعيد لأنني استطعت المساعدة!" if issue_resolved else "وداعاً!"
             return f"{base}{f' {user_name},' if user_name else ''} أتمنى لك نهاراً سعيداً!"
 
-<<<<<<< HEAD
 def detect_intent_and_teleco_relevance(text: str, language: str) -> tuple[str, bool]:
     """Detect user intent AND check if it's Teleco-related"""
     text_lower = text.lower()
     
     # Check if "teleco" is mentioned in ANY supported language
-=======
-# ===== HUMANOID ENHANCEMENTS =====
-def detect_intent_and_teleco_relevance(state: TelecoState) -> tuple[str, bool]:
-    """Detect user intent AND check if it's Teleco-related"""
-    text = state["text"]
-    language = state["language"]
-    
-    # First, check for Teleco keywords in the original language
-    keywords = SUPPORTED_LANGUAGES[language]
-    text_lower = text.lower()
-    
-    # Check if "teleco" is mentioned in ANY supported language - if so, it's definitely Teleco-related
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     teleco_brand_names = [
         'teleco', 'telco', 'telecom', 
         'ٹیلیکو', 'ٹیلی کو', 'ٹیلکو', 'ٹیلیکوم',  
         'تيليكو', 'تيليكوم', 'تلكو', 'تليكو'  
     ]
-<<<<<<< HEAD
     teleco_mentioned = any(brand in text_lower or brand in text for brand in teleco_brand_names)
     has_teleco_keywords = any(kw in text_lower for kw in SUPPORTED_LANGUAGES[language])
     
@@ -350,17 +243,6 @@ def detect_intent_and_teleco_relevance(state: TelecoState) -> tuple[str, bool]:
         return "TELECO_QUERY", True
     
     # Use LLM to detect intent and Teleco relevance
-=======
-    # Check both lowercase and original text (for non-ASCII characters)
-    teleco_mentioned = any(brand in text_lower or brand in text for brand in teleco_brand_names)
-    has_teleco_keywords = any(kw in text_lower for kw in keywords)
-    
-    # If Teleco is mentioned in the query (in ANY language), it's always Teleco-related
-    if teleco_mentioned:
-        return "TELECO_QUERY", True
-    
-    # Then use LLM to detect intent and Teleco relevance
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     prompt = f"""
     Analyze the user's message and provide TWO things:
     
@@ -387,10 +269,6 @@ def detect_intent_and_teleco_relevance(state: TelecoState) -> tuple[str, bool]:
     
     response = llm.invoke(prompt).content.strip()
     
-<<<<<<< HEAD
-=======
-    # Parse response
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     lines = response.split('\n')
     intent = None
     teleco_relevant = False
@@ -402,64 +280,11 @@ def detect_intent_and_teleco_relevance(state: TelecoState) -> tuple[str, bool]:
             relevance = line.replace('TELECO_RELEVANCE:', '').strip()
             teleco_relevant = (relevance == 'YES')
     
-<<<<<<< HEAD
-=======
-    # If we couldn't parse, fallback to keyword check
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     if intent is None:
         intent = "TELECO_QUERY" if has_teleco_keywords else "NON_TELECO_QUERY"
     
     return intent, teleco_relevant or has_teleco_keywords
 
-<<<<<<< HEAD
-=======
-def generate_humanoid_greeting(language: str, user_name: Optional[str] = None) -> str:
-    """Generate personalized greeting using LLM"""
-    time_of_day = get_time_based_greeting()
-    
-    prompt = f"""
-    Generate a warm, professional greeting for a telecom customer service chatbot.
-    
-    Requirements:
-    - Language: {language}
-    - Time of day: {time_of_day}
-    - User name: {user_name if user_name else 'Not provided'}
-    - Company: Teleco
-    - Tone: Friendly, helpful, professional
-    
-    {"Include the user's name naturally in the greeting" if user_name else "Don't use name since not provided"}
-    Mention that you can help with Teleco services.
-    
-    Make it sound natural and human-like (1-2 sentences).
-    
-    Generate ONLY the greeting message in {language}:
-    """
-    return llm.invoke(prompt).content.strip()
-
-def generate_humanoid_farewell(language: str, user_name: Optional[str] = None, 
-                              issue_resolved: bool = False) -> str:
-    """Generate personalized farewell using LLM"""
-    prompt = f"""
-    Generate a warm, professional farewell for a telecom customer service chatbot.
-    
-    Requirements:
-    - Language: {language}
-    - User name: {user_name if user_name else 'Not provided'}
-    - Issue resolved: {issue_resolved}
-    - Company: Teleco
-    - Tone: Friendly, appreciative, professional
-    
-    {"Thank the user by name" if user_name else "Thank generically"}
-    {"Add a positive note about resolution" if issue_resolved else "Offer further assistance"}
-    
-    Make it sound natural and human-like.
-    Keep it concise (1-2 sentences).
-    
-    Generate ONLY the farewell message in {language}:
-    """
-    return llm.invoke(prompt).content.strip()
-
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
 def generate_non_teleco_response(language: str, user_query: str) -> str:
     """Generate humanoid, conversational response for non-Teleco queries"""
     prompt = f"""
@@ -516,10 +341,6 @@ def extract_user_name(text: str, language: str) -> Optional[str]:
     response = llm.invoke(prompt).content.strip()
     return response if response != "NOT_PROVIDED" else None
 
-<<<<<<< HEAD
-=======
-# ===== SPELLING CORRECTION UTILITY =====
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
 def correct_spelling_and_normalize(text: str) -> str:
     """Use LLM to correct spelling errors and normalize text while preserving meaning"""
     prompt = f"""
@@ -536,16 +357,11 @@ def correct_spelling_and_normalize(text: str) -> str:
     """
     try:
         corrected = llm.invoke(prompt).content.strip()
-<<<<<<< HEAD
-=======
-        # Remove quotes if the LLM wrapped the response
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         corrected = corrected.strip('"').strip("'")
         return corrected if corrected else text
     except:
         return text
 
-<<<<<<< HEAD
 def language_detection_node(state: State) -> State:
     """STRICT language detection - only en, ur, ar with humanoid responses"""
     original_text = state["text"]
@@ -553,42 +369,17 @@ def language_detection_node(state: State) -> State:
     state["text"] = corrected_text
     
     def is_latin_script(text):
-=======
-def language_detection_node(state: TelecoState):
-    """STRICT language detection - only en, ur, ar with humanoid responses"""
-    # First, correct any spelling errors in the input
-    original_text = state["text"]
-    corrected_text = correct_spelling_and_normalize(original_text)
-    state["text"] = corrected_text  # Update state with corrected text
-    
-    # Check the SCRIPT being used (not just meaning)
-    # If user types in Latin characters, respond in English even if words are Urdu/Arabic
-    def is_latin_script(text):
-        """Check if text is primarily Latin (English) characters"""
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         latin_chars = sum(1 for c in text if c.isalpha() and ord(c) < 256)
         non_latin_chars = sum(1 for c in text if c.isalpha() and ord(c) >= 256)
         return latin_chars > non_latin_chars
     
     def is_arabic_urdu_script(text):
-<<<<<<< HEAD
         arabic_urdu_chars = sum(1 for c in text if '\u0600' <= c <= '\u06FF' or '\u0750' <= c <= '\u077F')
         return arabic_urdu_chars > 0
     
     if is_latin_script(corrected_text) and not is_arabic_urdu_script(corrected_text):
         lang = 'en'
     else:
-=======
-        """Check if text contains Arabic/Urdu script characters"""
-        arabic_urdu_chars = sum(1 for c in text if '\u0600' <= c <= '\u06FF' or '\u0750' <= c <= '\u077F')
-        return arabic_urdu_chars > 0
-    
-    # If text is in Latin script, treat as English regardless of word meaning
-    if is_latin_script(corrected_text) and not is_arabic_urdu_script(corrected_text):
-        lang = 'en'
-    else:
-        # Use LLM for non-Latin script detection
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         prompt = f"""
         STRICTLY detect language of this text based on the SCRIPT used (not the meaning).
         - If it uses Arabic/Urdu script characters, detect as 'ur' for Urdu or 'ar' for Arabic
@@ -600,10 +391,6 @@ def language_detection_node(state: TelecoState):
         lang = llm.invoke(prompt).content.strip().lower()
     
     if lang not in SUPPORTED_LANGUAGES:
-<<<<<<< HEAD
-=======
-        # Generate humanoid response using LLM instead of hardcoded message
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         humanoid_prompt = f"""
         You are a friendly Teleco customer service assistant. A user has sent a message in a language you don't fully support.
         
@@ -621,34 +408,21 @@ def language_detection_node(state: TelecoState):
         Response in English:
         """
         state["response"] = llm.invoke(humanoid_prompt).content.strip()
-<<<<<<< HEAD
         state["should_end"] = True
         state["current_route"] = "reject"
     else:
         state["language"] = lang
         state["original_language"] = lang
         state["current_route"] = "intent_detection"
-=======
-        state["route"] = "reject"
-    else:
-        state["language"] = lang
-        state["original_language"] = lang
-        state["route"] = "intent_detection"
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     
     state["agent_path"].append("LanguageDetection")
     return state
 
-<<<<<<< HEAD
 def intent_detection_node(state: State) -> State:
-=======
-def intent_detection_node(state: TelecoState):
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     """Detect user intent with STRICT Teleco-only policy"""
     text = state["text"].strip().lower()
     language = state["language"]
     
-<<<<<<< HEAD
     english_greetings = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'greetings', 'helo', 'hii', 'heya', 'howdy', 'sup', 'yo', 'hiya']
     english_farewells = ['goodbye', 'bye', 'farewell', 'see you', 'see ya', 'take care', 'good bye', 'fare well', 'byebye', 'bye bye', 'later', 'cya', 'peace', 'cheerio', 'adios', 'goodnight', 'good night', 'gn', 'ttyl']
     
@@ -665,32 +439,6 @@ def intent_detection_node(state: TelecoState):
             is_simple_greeting = True
         elif normalized_text in english_farewells or any(normalized_text.startswith(f) and (len(normalized_text) == len(f) or normalized_text[len(f)] == ' ') for f in english_farewells):
             is_simple_farewell = True
-=======
-    # First, check for simple greetings/farewells directly without LLM
-    # Expanded to include common variations and misspellings
-    english_greetings = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'greetings', 'helo', 'hii', 'heya', 'howdy', 'sup', 'yo', 'hiya']
-    english_farewells = ['goodbye', 'bye', 'farewell', 'see you', 'see ya', 'take care', 'good bye', 'fare well', 'byebye', 'bye bye', 'later', 'cya', 'peace', 'cheerio', 'adios', 'goodnight', 'good night', 'gn', 'ttyl']
-    
-    # Check if it's a simple greeting
-    is_simple_greeting = False
-    is_simple_farewell = False
-    
-    # Normalize text for comparison (remove extra spaces, handle common patterns)
-    normalized_text = ' '.join(text.split()).lower()
-    
-    if language == 'en':
-        # Split into words for proper word boundary matching
-        words = normalized_text.split()
-        first_words = ' '.join(words[:3]) if len(words) >= 3 else normalized_text  # Check first 3 words max
-        
-        # Check for greetings - must be exact match, start of sentence, or first word
-        if normalized_text in english_greetings or any(normalized_text.startswith(g) and (len(normalized_text) == len(g) or normalized_text[len(g)] == ' ') for g in english_greetings):
-            is_simple_greeting = True
-        # Check for farewells - must be exact match or start of sentence  
-        elif normalized_text in english_farewells or any(normalized_text.startswith(f) and (len(normalized_text) == len(f) or normalized_text[len(f)] == ' ') for f in english_farewells):
-            is_simple_farewell = True
-    
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     elif language == 'ur':
         urdu_greetings = ['ہیلو', 'ہائے', 'سلام', 'السلام علیکم', 'صبح بخیر', 'شام بخیر']
         urdu_farewells = ['الوداع', 'خدا حافظ', 'خدا نگہبان', 'بای', 'پھر ملیں گے']
@@ -698,11 +446,6 @@ def intent_detection_node(state: TelecoState):
             is_simple_greeting = True
         elif any(farewell in text for farewell in urdu_farewells):
             is_simple_farewell = True
-<<<<<<< HEAD
-=======
-    
-
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     elif language == 'ar':
         arabic_greetings = ['مرحبا', 'أهلا', 'سلام', 'صباح الخير', 'مساء الخير']
         arabic_farewells = ['وداعا', 'مع السلامة', 'إلى اللقاء', 'سلام']
@@ -711,19 +454,11 @@ def intent_detection_node(state: TelecoState):
         elif any(farewell in text for farewell in arabic_farewells):
             is_simple_farewell = True
     
-<<<<<<< HEAD
     if is_simple_greeting:
         user_name = state.get("user_name")
         state["response"] = get_random_greeting(language, user_name)
         state["should_end"] = True
         state["is_greeting"] = True
-=======
-    # Handle simple greetings/farewells immediately
-    if is_simple_greeting:
-        user_name = state.get("user_name")
-        state["response"] = get_random_greeting(language, user_name)
-        state["route"] = "greeting_response"
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         
         if state.get("is_new_conversation", True):
             state["is_new_conversation"] = False
@@ -740,22 +475,15 @@ def intent_detection_node(state: TelecoState):
             recent_resolved = memory.get("last_issue_resolved", False)
         
         state["response"] = get_random_farewell(language, user_name, recent_resolved)
-<<<<<<< HEAD
         state["should_end"] = True
         state["is_farewell"] = True
         
-=======
-        state["route"] = "farewell_response"
-        
-        # Clear conversation memory after farewell
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         if conversation_id and conversation_id in conversation_memory:
             del conversation_memory[conversation_id]
             
         state["agent_path"].append("IntentDetection")
         return state
     
-<<<<<<< HEAD
     # Use LLM-based detection
     intent, is_teleco_related = detect_intent_and_teleco_relevance(state["text"], state["language"])
     state["previous_intent"] = intent
@@ -764,45 +492,23 @@ def intent_detection_node(state: TelecoState):
     conversation_id = state.get("conversation_id")
     if conversation_id and conversation_id in conversation_memory:
         memory = conversation_memory[conversation_id]
-=======
-    # For more complex cases, use the original LLM-based detection
-    # Detect intent AND check Teleco relevance
-    intent, is_teleco_related = detect_intent_and_teleco_relevance(state)
-    state["previous_intent"] = intent
-    
-    # Handle conversation memory
-    conversation_id = state.get("conversation_id")
-    if conversation_id and conversation_id in conversation_memory:
-        memory = conversation_memory[conversation_id]
-        # Update user name if mentioned
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         if intent == "INTRODUCTION":
             name = extract_user_name(state["text"], state["language"])
             if name:
                 memory["user_name"] = name
                 state["user_name"] = name
     
-<<<<<<< HEAD
     # Handle non-Teleco queries
     if intent == "NON_TELECO_QUERY" or not is_teleco_related:
         response = generate_non_teleco_response(state["language"], state["text"])
         state["response"] = response
         state["should_end"] = True
         state["current_route"] = "non_teleco_response"
-=======
-    # STRICT: Handle non-Teleco queries immediately
-    if intent == "NON_TELECO_QUERY" or not is_teleco_related:
-        # Generate polite non-Teleco response
-        response = generate_non_teleco_response(state["language"], state["text"])
-        state["response"] = response
-        state["route"] = "non_teleco_response"
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         state["agent_path"].append("IntentDetection")
         return state
     
     # Handle Teleco-related intents
     if intent == "GREETING":
-<<<<<<< HEAD
         user_name = state.get("user_name")
         greeting = get_random_greeting(state["language"], user_name)
         state["response"] = greeting
@@ -815,26 +521,11 @@ def intent_detection_node(state: TelecoState):
         return state
         
     elif intent == "FAREWELL":
-=======
-        # Generate personalized greeting
-        user_name = state.get("user_name")
-        greeting = get_random_greeting(state["language"], user_name)
-        state["response"] = greeting
-        state["route"] = "greeting_response"
-        
-        # If this is a new conversation, set flag
-        if state.get("is_new_conversation", True):
-            state["is_new_conversation"] = False
-            
-    elif intent == "FAREWELL":
-        # Check if recent issue was resolved
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         recent_resolved = False
         if conversation_id and conversation_id in conversation_memory:
             memory = conversation_memory[conversation_id]
             recent_resolved = memory.get("last_issue_resolved", False)
         
-<<<<<<< HEAD
         user_name = state.get("user_name")
         farewell = get_random_farewell(state["language"], user_name, recent_resolved)
         state["response"] = farewell
@@ -847,20 +538,6 @@ def intent_detection_node(state: TelecoState):
         return state
         
     elif intent == "THANKS":
-=======
-        # Generate personalized farewell
-        user_name = state.get("user_name")
-        farewell = get_random_farewell(state["language"], user_name, recent_resolved)
-        state["response"] = farewell
-        state["route"] = "farewell_response"
-        
-        # Clear conversation memory after farewell
-        if conversation_id and conversation_id in conversation_memory:
-            del conversation_memory[conversation_id]
-            
-    elif intent == "THANKS":
-        # Generate thank you response
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         prompt = f"""
         Generate a warm, professional response to thank you from a Teleco customer.
         
@@ -875,7 +552,6 @@ def intent_detection_node(state: TelecoState):
         """
         response = llm.invoke(prompt).content.strip()
         state["response"] = response
-<<<<<<< HEAD
         state["should_end"] = True
         state["agent_path"].append("IntentDetection")
         return state
@@ -884,25 +560,11 @@ def intent_detection_node(state: TelecoState):
         name = extract_user_name(state["text"], state["language"])
         if name:
             state["user_name"] = name
-=======
-        state["route"] = "thanks_response"
-        
-    elif intent == "INTRODUCTION":
-        # Extract and acknowledge name
-        name = extract_user_name(state["text"], state["language"])
-        if name:
-            state["user_name"] = name
-            # Store in memory
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
             if conversation_id:
                 if conversation_id not in conversation_memory:
                     conversation_memory[conversation_id] = {}
                 conversation_memory[conversation_id]["user_name"] = name
             
-<<<<<<< HEAD
-=======
-            # Generate name acknowledgment
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
             prompt = f"""
             Generate a friendly acknowledgment of the user's name and offer Teleco assistance.
             
@@ -917,7 +579,6 @@ def intent_detection_node(state: TelecoState):
             """
             response = llm.invoke(prompt).content.strip()
             state["response"] = response
-<<<<<<< HEAD
             state["should_end"] = True
             state["agent_path"].append("IntentDetection")
             return state
@@ -945,45 +606,10 @@ def teleco_processing_node(state: State) -> State:
         english_query = translate_to_english(state["text"], state["language"])
         state["english_query"] = english_query
     
-=======
-            state["route"] = "introduction_response"
-        else:
-            # If no name extracted, continue to Teleco processing
-            state["route"] = "translation_node"
-            
-    elif intent == "TELECO_QUERY" or is_teleco_related:
-        # Proceed to translation node first
-        state["route"] = "translation_node"
-        
-    else:
-        # Fallback - treat as non-Teleco
-        response = generate_non_teleco_response(state["language"], state["text"])
-        state["response"] = response
-        state["route"] = "non_teleco_response"
-    
-    state["agent_path"].append("IntentDetection")
-    return state
-
-def teleco_processing_node(state: TelecoState):
-    """Process Teleco queries through guardrail and router"""
-    # Use the English query that was stored in translation_node
-    english_query = state.get("english_query", "")
-    
-    if not english_query:
-        # Fallback: translate now if not already done
-        english_query = translate_to_english(state["text"], state["language"])
-        state["english_query"] = english_query
-    
-    # Check if query contains Teleco keywords in English
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     text_lower = english_query.lower()
     english_keywords = SUPPORTED_LANGUAGES['en']
     
     if not any(kw in text_lower for kw in english_keywords):
-<<<<<<< HEAD
-=======
-        # Generate polite Teleco-only response in user's language
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         prompt = f"""
         Politely inform the user that you can only help with Teleco-related queries.
         
@@ -999,16 +625,9 @@ def teleco_processing_node(state: TelecoState):
         """
         response = llm.invoke(prompt).content.strip()
         state["response"] = response
-<<<<<<< HEAD
         state["should_end"] = True
         state["current_route"] = "reject"
     else:
-=======
-        state["route"] = "reject"
-    else:
-        # STRICT: Verify it's about one of the four categories
-        # Check if query contains category keywords
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         category_found = False
         for category, cat_keywords in CATEGORY_KEYWORDS.items():
             if any(kw in text_lower for kw in cat_keywords):
@@ -1016,10 +635,6 @@ def teleco_processing_node(state: TelecoState):
                 break
         
         if not category_found:
-<<<<<<< HEAD
-=======
-            # Generate response for non-category Teleco queries in user's language
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
             prompt = f"""
             The user has asked about Teleco but not in one of the specific categories you handle.
             
@@ -1038,28 +653,16 @@ def teleco_processing_node(state: TelecoState):
             """
             response = llm.invoke(prompt).content.strip()
             state["response"] = response
-<<<<<<< HEAD
             state["should_end"] = True
             state["current_route"] = "reject"
         else:
             state["current_route"] = "router"
-=======
-            state["route"] = "reject"
-        else:
-            state["route"] = "router"
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     
     state["agent_path"].append("TelecoProcessing")
     return state
 
-<<<<<<< HEAD
 def router_node(state: State) -> State:
     """Router - handles five categories including general Teleco queries"""
-=======
-def router_node(state: TelecoState):
-    """Router - handles five categories including general Teleco queries"""
-    # Use English query for categorization
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     english_query = state.get("english_query", "")
     if not english_query:
         english_query = translate_to_english(state["text"], state["language"])
@@ -1079,31 +682,17 @@ def router_node(state: TelecoState):
     """
     category = llm.invoke(prompt).content.strip().lower()
     
-<<<<<<< HEAD
     valid_categories = ["billing", "packages", "troubleshooting", "policies", "general"]
     
     if category in valid_categories:
         state["current_route"] = category
         
-=======
-    # Valid categories now include general
-    valid_categories = ["billing", "packages", "troubleshooting", "policies", "general"]
-    
-    if category in valid_categories:
-        state["route"] = category
-        
-        # Update conversation memory with last category
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         conversation_id = state.get("conversation_id")
         if conversation_id:
             if conversation_id not in conversation_memory:
                 conversation_memory[conversation_id] = {}
             conversation_memory[conversation_id]["last_category"] = category
     else:
-<<<<<<< HEAD
-=======
-        # Generate polite rejection response in user's language
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
         prompt = f"""
         Generate a polite response for a Teleco query that doesn't fit your categories.
         
@@ -1122,63 +711,35 @@ def router_node(state: TelecoState):
         """
         response = llm.invoke(prompt).content.strip()
         state["response"] = response
-<<<<<<< HEAD
         state["should_end"] = True
         state["current_route"] = "reject"
-=======
-        state["route"] = "reject"
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     
     state["agent_path"].append("Router")
     return state
 
-<<<<<<< HEAD
 def rag_retrieve_node(state: State) -> State:
     """Retrieve context from documents using English query"""
-=======
-def rag_retrieve_node(state: TelecoState):
-    """Retrieve context from documents using English query"""
-    # Use the English query that was stored in translation_node
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     english_query = state.get("english_query", "")
     if not english_query:
         english_query = translate_to_english(state["text"], state["language"])
     
-<<<<<<< HEAD
     context = rag_retrieve(english_query, state["current_route"])
-=======
-    # Get context using router's category decision
-    context = rag_retrieve(english_query, state["route"])
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     
     state["context"] = context
     state["agent_path"].append("RagRetrieve")
     
     print(f"\n{'='*60}")
-<<<<<<< HEAD
     print(f"ROUTE: {state['current_route']} | QUERY (EN): {english_query}")
-=======
-    print(f"ROUTE: {state['route']} | QUERY (EN): {english_query}")
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     print(f"RETRIEVED CONTEXT:\n{context if context else 'NO RELEVANT DOCUMENTS FOUND'}")
     print(f"{'='*60}\n")
     
     return state
 
-<<<<<<< HEAD
 def billing_agent(state: State) -> State:
-=======
-# ===== UPDATED SPECIALIZED AGENTS (ALWAYS WORK IN ENGLISH) =====
-def billing_agent(state: TelecoState):
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     """Billing specialist - always generates in English, then translates"""
     user_name = state.get("user_name")
     english_query = state.get("english_query", "")
     
-<<<<<<< HEAD
-=======
-    # Generate response in English
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     prompt = f"""
     You are Teleco's billing specialist. 
     
@@ -1200,41 +761,23 @@ def billing_agent(state: TelecoState):
     """
     english_response = llm.invoke(prompt).content.strip()
     
-<<<<<<< HEAD
-=======
-    # Translate response to user's language
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     if state["language"] == 'en':
         state["response"] = english_response
     else:
         state["response"] = translate_response(english_response, state["language"])
     
-<<<<<<< HEAD
     state["should_end"] = True
     state["agent_path"].append("BillingAgent")
     return state
 
 def packages_agent(state: State) -> State:
-=======
-    state["agent_path"].append("BillingAgent")
-    return state
-
-def packages_agent(state: TelecoState):
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     """Packages specialist - always generates in English, then translates"""
     user_name = state.get("user_name")
     english_query = state.get("english_query", "")
     context = state.get('context', '')
     
-<<<<<<< HEAD
     has_useful_context = context and len(context.strip()) > 50
     
-=======
-    # Check if context has useful information
-    has_useful_context = context and len(context.strip()) > 50
-    
-    # Generate response in English
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     prompt = f"""
     You are Teleco's packages specialist. 
     
@@ -1267,41 +810,23 @@ def packages_agent(state: TelecoState):
     """
     english_response = llm.invoke(prompt).content.strip()
     
-<<<<<<< HEAD
-=======
-    # Translate response to user's language
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     if state["language"] == 'en':
         state["response"] = english_response
     else:
         state["response"] = translate_response(english_response, state["language"])
     
-<<<<<<< HEAD
     state["should_end"] = True
     state["agent_path"].append("PackagesAgent")
     return state
 
 def troubleshooting_agent(state: State) -> State:
-=======
-    state["agent_path"].append("PackagesAgent")
-    return state
-
-def troubleshooting_agent(state: TelecoState):
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     """Troubleshooting specialist - always generates in English, then translates"""
     user_name = state.get("user_name")
     english_query = state.get("english_query", "")
     context = state.get('context', '')
     
-<<<<<<< HEAD
     has_useful_context = context and len(context.strip()) > 50
     
-=======
-    # Check if context has useful information
-    has_useful_context = context and len(context.strip()) > 50
-    
-    # Generate response in English
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     prompt = f"""
     You are Teleco's troubleshooting specialist. 
     
@@ -1334,43 +859,25 @@ def troubleshooting_agent(state: TelecoState):
     """
     english_response = llm.invoke(prompt).content.strip()
     
-<<<<<<< HEAD
-=======
-    # Translate response to user's language
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     if state["language"] == 'en':
         state["response"] = english_response
     else:
         state["response"] = translate_response(english_response, state["language"])
     
-<<<<<<< HEAD
     state["should_end"] = True
     state["agent_path"].append("TroubleshootingAgent")
     
-=======
-    state["agent_path"].append("TroubleshootingAgent")
-    
-    # Mark issue as potentially resolved in memory
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     conversation_id = state.get("conversation_id")
     if conversation_id and conversation_id in conversation_memory:
         conversation_memory[conversation_id]["last_issue_resolved"] = True
     
     return state
 
-<<<<<<< HEAD
 def policies_agent(state: State) -> State:
-=======
-def policies_agent(state: TelecoState):
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     """Policies specialist - always generates in English, then translates"""
     user_name = state.get("user_name")
     english_query = state.get("english_query", "")
     
-<<<<<<< HEAD
-=======
-    # Generate response in English
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     prompt = f"""
     You are Teleco's policies specialist. 
     
@@ -1392,41 +899,23 @@ def policies_agent(state: TelecoState):
     """
     english_response = llm.invoke(prompt).content.strip()
     
-<<<<<<< HEAD
-=======
-    # Translate response to user's language
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     if state["language"] == 'en':
         state["response"] = english_response
     else:
         state["response"] = translate_response(english_response, state["language"])
     
-<<<<<<< HEAD
     state["should_end"] = True
     state["agent_path"].append("PoliciesAgent")
     return state
 
 def general_agent(state: State) -> State:
-=======
-    state["agent_path"].append("PoliciesAgent")
-    return state
-
-def general_agent(state: TelecoState):
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     """General Teleco information specialist - handles questions about Teleco itself"""
     user_name = state.get("user_name")
     english_query = state.get("english_query", "")
     context = state.get('context', '')
     
-<<<<<<< HEAD
     has_useful_context = context and len(context.strip()) > 50
     
-=======
-    # Check if context is empty or minimal
-    has_useful_context = context and len(context.strip()) > 50
-    
-    # Generate response in English
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     prompt = f"""
     You are Teleco's friendly customer service assistant. The user is asking about Teleco.
     
@@ -1451,16 +940,11 @@ def general_agent(state: TelecoState):
     """
     english_response = llm.invoke(prompt).content.strip()
     
-<<<<<<< HEAD
-=======
-    # Translate response to user's language
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     if state["language"] == 'en':
         state["response"] = english_response
     else:
         state["response"] = translate_response(english_response, state["language"])
     
-<<<<<<< HEAD
     state["should_end"] = True
     state["agent_path"].append("GeneralAgent")
     return state
@@ -1597,16 +1081,10 @@ def build_workflow():
 workflow = build_workflow()
 
 # ===== MAIN ENTRY POINT =====
-=======
-    state["agent_path"].append("GeneralAgent")
-    return state
-
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
 def run_agent(query: str, conversation_id: Optional[str] = None) -> HumanoidResponse:
     """
     Main function to run the agent with a given query
     """
-<<<<<<< HEAD
     if not conversation_id:
         conversation_id = f"conv_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{os.urandom(4).hex()}"
     
@@ -1648,118 +1126,4 @@ def run_agent(query: str, conversation_id: Optional[str] = None) -> HumanoidResp
         conversation_id=conversation_id,
         is_greeting=final_state["is_greeting"],
         is_farewell=final_state["is_farewell"]
-=======
-    # Generate conversation ID if not provided
-    if not conversation_id:
-        conversation_id = f"conv_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{os.urandom(4).hex()}"
-    
-    # Check if this is a new conversation
-    is_new_conversation = conversation_id not in conversation_memory
-    
-    # Initialize state with new field
-    state = TelecoState(
-        text=query,
-        language="en",
-        original_language="en",
-        route=None,
-        agent_path=[],
-        response=None,
-        context=None,
-        conversation_id=conversation_id,
-        user_name=None,
-        is_new_conversation=is_new_conversation,
-        previous_intent=None,
-        english_query=None  # New field
-    )
-    
-    # Check memory for user name
-    if conversation_id in conversation_memory:
-        memory = conversation_memory[conversation_id]
-        if "user_name" in memory:
-            state["user_name"] = memory["user_name"]
-    
-    # Execute nodes in sequence
-    # Language Detection
-    state = language_detection_node(state)
-    if state["route"] == "reject":
-        return HumanoidResponse(
-            response=state["response"],
-            agent_path=state["agent_path"],
-            language=state["language"],
-            conversation_id=conversation_id,
-            is_greeting=False,
-            is_farewell=False
-        )
-    
-    # Intent Detection (with strict Teleco-only policy)
-    state = intent_detection_node(state)
-    
-    # Check if intent was handled (greeting, farewell, non-Teleco, etc.)
-    if state["route"] in ["greeting_response", "farewell_response", 
-                         "thanks_response", "introduction_response", 
-                         "non_teleco_response"]:
-        is_farewell = state["route"] == "farewell_response"
-        is_greeting = state["route"] == "greeting_response"
-        
-        return HumanoidResponse(
-            response=state["response"],
-            agent_path=state["agent_path"],
-            language=state["language"],
-            conversation_id=conversation_id,
-            is_greeting=is_greeting,
-            is_farewell=is_farewell
-        )
-    
-    # Translation Node (for Teleco queries)
-    if state["route"] == "translation_node":
-        state = translation_node(state)
-        state["route"] = "teleco_processing"
-    
-    # Teleco Processing (only reached for Teleco queries)
-    state = teleco_processing_node(state)
-    if state["route"] == "reject":
-        return HumanoidResponse(
-            response=state["response"],
-            agent_path=state["agent_path"],
-            language=state["language"],
-            conversation_id=conversation_id,
-            is_greeting=False,
-            is_farewell=False
-        )
-    
-    # Router
-    state = router_node(state)
-    if state["route"] == "reject":
-        return HumanoidResponse(
-            response=state["response"],
-            agent_path=state["agent_path"],
-            language=state["language"],
-            conversation_id=conversation_id,
-            is_greeting=False,
-            is_farewell=False
-        )
-    
-    # Rag Retrieve
-    state = rag_retrieve_node(state)
-    
-    # Execute the specialized agent based on route
-    if state["route"] == "billing":
-        state = billing_agent(state)
-    elif state["route"] == "packages":
-        state = packages_agent(state)
-    elif state["route"] == "troubleshooting":
-        state = troubleshooting_agent(state)
-    elif state["route"] == "policies":
-        state = policies_agent(state)
-    elif state["route"] == "general":
-        state = general_agent(state)
-    
-    return HumanoidResponse(
-        response=state["response"],
-        agent_path=state["agent_path"],
-        language=state["language"],
-        conversation_id=conversation_id,
-        is_greeting=False,
-        is_farewell=False
->>>>>>> ae48cfe162e08e9fcabd0424cc067a0b79ecea20
     )
