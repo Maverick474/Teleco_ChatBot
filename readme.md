@@ -14,4 +14,9 @@ The Telecom Chatbot is a multi-agent system designed to provide intelligent cust
 - Multi-Agent Support: Specialized agents for policies, packages, general inquiries, troubleshooting, and billing
 - LLM Integration: Powered by OpenAI's language model (gpt-4o-mini) for natural language understanding and generation
 
+## Architecture
+<img width="818" height="1031" alt="Teleco_chat drawio" src="https://github.com/user-attachments/assets/ead2fd80-7e05-42f4-80ca-6e574d4eefbe" />
+
+
+
 
