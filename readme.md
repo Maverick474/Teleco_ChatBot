@@ -37,7 +37,6 @@ The Telecom Chatbot is a multi-agent system designed to provide intelligent cust
 - **Language:** Python 3.10+
 
 ## Installation
-**Option 1: Using Docker Compose (Recommended)**
 
 ## Prerequisites
 - Docker and Docker Compose installed on your system
@@ -60,5 +59,37 @@ This will start:
 
 - **Step 4 view logs:**
 `docker compose logs -f`
+
+- **Step 5 Stop Service:**
+`docker compose down`
+
+## Demo
+
+## Usage
+### Web Interface
+- Once the docker compose starts running both the frontend and backend
+- Navgate to the chatbot interface on: `http://localhost:8501`
+- Interact with the Chatbot
+- Type your query in the message input box
+- The system will automatically detect the language
+- Apply security checks through guardrails
+- Route your query to the appropriate specialized agent
+- Retrieve relevant information from the knowledge base
+- Generate a response using the LLM
+
+### Example Queries
+- What is Teleco?
+- میں ہلکا صارف ہوں، براہِ کرم مجھے کوئی پیکج تجویز کریں۔
+- ما هي الباقات التي تقدمونها؟
+- My Router is not working what should i do?
+- My sim is not working what should i do?
+
+### Knowledge Base
+When relevant information is not found in the knowledge base:
+- **Warning Response:** The chatbot displays a clear warning message indicating that the specific information is not available in the knowledge base
+- **Fallback Behavior:** The system gracefully handles missing context and provides a helpful response
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 
