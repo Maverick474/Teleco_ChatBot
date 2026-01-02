@@ -42,3 +42,23 @@ The Telecom Chatbot is a multi-agent system designed to provide intelligent cust
 ## Prerequisites
 - Docker and Docker Compose installed on your system
 - OpenAI API key
+
+### Steps
+- **Step 1 Clone the repository:**
+`git clone https://github.com/Maverick474/Teleco_ChatBot.git`
+
+- **Step 2 change your directory to the specified folder:**
+`cd Teleco_ChatBot`
+
+- **Step 3 build and run docker compose:**
+`docker compose up -d`
+
+This will start:
+- FastAPI backend on `http://localhost:8000`
+- Streamlit frontend on `http://localhost:8501`
+- ChromaDB container
+
+- **Step 4 view logs:**
+`docker compose logs -f`
+
+
