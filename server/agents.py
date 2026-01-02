@@ -1077,10 +1077,8 @@ def build_workflow():
     
     return workflow.compile()
 
-# Create the workflow
 workflow = build_workflow()
 
-# ===== MAIN ENTRY POINT =====
 def run_agent(query: str, conversation_id: Optional[str] = None) -> HumanoidResponse:
     """
     Main function to run the agent with a given query
