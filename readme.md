@@ -11,6 +11,7 @@ The Telecom Chatbot is a multi-agent system designed to provide intelligent cust
 - **Security:** Implements guardrails to block malicious or outside queries
 - **Intelligent Routing:** Uses a Router Agent to direct queries to specialized agents
 - **RAG Retrieval:** Integrates retrieval-augmented generation for accurate information lookup
+- **Document Upload Feature:** Upload and ingest PDF documents directly through the web interface for immediate knowledge base expansion
 - **Multi-Agent Support:** Specialized agents for policies, packages, general inquiries, troubleshooting, and billing
 - **LLM Integration:** Powered by OpenAI's language model (gpt-4o-mini) for natural language understanding and generation
 
@@ -70,6 +71,7 @@ This will start:
 - Once the docker compose starts running both the frontend and backend
 - Navgate to the chatbot interface on: `http://localhost:8501`
 - Interact with the Chatbot
+- Upload a document (only teleco related) to store it in the Vector Database for future retrieval.
 - Type your query in the message input box
 - The system will automatically detect the language
 - Apply security checks through guardrails
@@ -91,5 +93,6 @@ When relevant information is not found in the knowledge base:
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
+
 
 
